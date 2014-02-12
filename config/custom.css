@@ -1,0 +1,19 @@
+/**
+* Custom CSS declarations
+*
+* If your server is registered, you can create a file named `custom.css`
+* in the `config` directory and populate it with CSS rules to override the
+* normal client styles, when the client is connected to your server. In
+* other words, you can use this facility to introduce a custom theme for
+* your server.
+*/
+
+#header{background:url("http://pythoughts.com/wp-content/uploads/2011/01/pinkandblue.jpg")}
+
+body{background-image:url("http://fc05.deviantart.net/fs71/f/2013/075/2/c/ice_type_wallpaper_by_reshiramaster-d5y88hw.jpg");background-repeat:no-repeat;background-position:center}
+
+.chat-log{font-size:10pt;background: url("http://cdn.bulbagarden.net/upload/3/3b/501Oshawott.png") no-repeat scroll right bottom;background:#f2f9ff;color:#000;overflow:auto;}
+
+.userlist{
+    background: #0000FF;
+}
