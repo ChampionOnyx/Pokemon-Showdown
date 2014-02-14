@@ -15,5 +15,6 @@ body{background-image:url("http://fc05.deviantart.net/fs71/f/2013/075/2/c/ice_ty
 .chat-log{font-size:10pt;background: url("http://cdn.bulbagarden.net/upload/3/3b/501Oshawott.png") no-repeat scroll right bottom;background:#f2f9ff;color:#000;overflow:auto;}
 
 .userlist{
-    background: #0000FF;
+border-left: 1px solid #D5DDE4;
+background: #A0D8F1;
 }
