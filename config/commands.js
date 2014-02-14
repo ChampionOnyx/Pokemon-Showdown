@@ -1342,9 +1342,6 @@ var commands = exports.commands = {
 		if (!targetUser) {
 			return this.sendReply('User '+this.targetUser+' not found.');
 		}
-		if (target.length > MAX_REASON_LENGTH) {
-			return this.sendReply('The reason is too long. It cannot exceed ' + MAX_REASON_LENGTH + ' characters.');
-		}
 		if (!user.can('lock', targetUser)) {
 			return this.sendReply('/smite - Access denied.');
 		}
@@ -1362,6 +1359,22 @@ var commands = exports.commands = {
 		this.add('|unlink|' + targetUser.userid);
 
 		targetUser.lock();
+	},
+	
+	unsmite: function(target, room, user) {
+		if (!target) return this.parse('/help unlock');
+		if (!this.can('lock')) return false;
+
+		var unlocked = Users.unlock(target);
+
+		if (unlocked) {
+			var names = Object.keys(unlocked);
+			this.addModCommand('' + names.join(', ') + ' ' +
+					((names.length > 1) ? 'were' : 'was') +
+					' unlocked by ' + user.name + '.');
+		} else {
+			this.sendReply('User '+target+' is not locked.');
+		}
 	},
 
 	d: 'poof',
