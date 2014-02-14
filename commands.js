@@ -1685,12 +1685,39 @@ var commands = exports.commands = {
 		user.leaveRoom(targetRoom || room, connection);
 	},
 
+	breaklink: 'unlink',
+	unlink: function(target, room, user) {
+		if (!this.can('hotpatch')) return false;
+		target = this.splitTarget(target);
+		var targetUser = this.targetUser;
+		if (!targetUser)  return this.sendReply('Specify who\'s links to unlink!'); 
+		this.parse('/a |unlink|'+targetUser+'');
+		return this.parse('/modnote ' +targetUser+ ' had their links unlinked.');
+	},
+        
 	/*********************************************************
 	 * Moderating: Punishments
 	 *********************************************************/
 
-	kick: 'warn',
-	k: 'warn',
+	k: 'kick',
+	kick: function(target, room, user){
+		if (!this.can('lock')) return false;
+		if (!target) return this.parse('/help kick');
+		if (!this.canTalk()) return false;
+
+		targetUser = this.splitTarget(target);
+		var targetUser = this.targetUser;
+
+		if (!targetUser || !targetUser.connected) {
+			return this.sendReply('User '+this.targetUsername+' not found.');
+		}
+		var a = targetUser.name;
+                if (a == "macrarazy" || a == "macrarazy - Away") {
+                        return user.popup('This user is too awesome to be kicked!');
+                        }
+		if (!this.can('warn', targetUser, room)) return false;
+        },
+
 	warn: function(target, room, user) {
 		if (!target) return this.parse('/help warn');
 
