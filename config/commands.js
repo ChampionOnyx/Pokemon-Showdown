@@ -1333,6 +1333,36 @@ var commands = exports.commands = {
 	pet: function(target, room, user) {
 		return this.parse("/me pets " + target + ".");
 	},
+	
+	smite: function(target, room, user) {
+		if (!target) return this.parse('/help lock');
+
+		target = this.splitTarget(target);
+		var targetUser = this.targetUser;
+		if (!targetUser) {
+			return this.sendReply('User '+this.targetUser+' not found.');
+		}
+		if (target.length > MAX_REASON_LENGTH) {
+			return this.sendReply('The reason is too long. It cannot exceed ' + MAX_REASON_LENGTH + ' characters.');
+		}
+		if (!user.can('lock', targetUser)) {
+			return this.sendReply('/smite - Access denied.');
+		}
+
+		if ((targetUser.locked || Users.checkBanned(targetUser.latestIp)) && !target) {
+			var problem = ' but was already '+(targetUser.locked ? 'locked' : 'banned');
+			return this.privateModCommand('('+targetUser.name+' would be locked by '+user.name+problem+'.)');
+		}
+
+		targetUser.popup(+user.name+' has struck you with lightning! You can\'t talk in battles, chatrooms, etc because you\'re still left stunned with the shock!');
+
+		this.addModCommand(""+targetUser.name+" was struck by lightning from "+user.name+"!" + (target ? " (" + target + ")" : ""));
+		var alts = targetUser.getAlts();
+		if (alts.length) this.addModCommand(""+targetUser.name+"'s alts were also struck by lightning: "+alts.join(", "));
+		this.add('|unlink|' + targetUser.userid);
+
+		targetUser.lock();
+	},
 
 	d: 'poof',
 	cpoof: 'poof',
