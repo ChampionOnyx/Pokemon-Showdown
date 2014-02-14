@@ -2094,16 +2094,61 @@ var commands = exports.commands = {
 		this.logModCommand(user.name+' declared '+target);
 	},
 
-	gdeclare: 'globaldeclare',
-	globaldeclare: function(target, room, user) {
-		if (!target) return this.parse('/help globaldeclare');
-		if (!this.can('gdeclare')) return false;
+	gdeclarered: 'gdeclare',
+	gdeclaregreen: 'gdeclare',
+	gdeclare: function(target, room, user, connection, cmd) {
+		if (!target) return this.parse('/help gdeclare');
+		if (!this.can('lockdown')) return false;
 
-		for (var id in Rooms.rooms) {
-			if (id !== 'global') Rooms.rooms[id].addRaw('<div class="broadcast-blue"><b>'+target+'</b></div>');
+		var roomName = (room.isPrivate)? 'a private room' : room.id;
+
+		if (cmd === 'gdeclare'){
+			for (var id in Rooms.rooms) {
+				if (id !== 'global') Rooms.rooms[id].addRaw('<div class="broadcast-blue"><b><font size=1><i>Global declare from '+roomName+'<br /></i></font size>'+target+'</b></div>');
+			}
+		}
+		if (cmd === 'gdeclarered'){
+			for (var id in Rooms.rooms) {
+				if (id !== 'global') Rooms.rooms[id].addRaw('<div class="broadcast-red"><b><font size=1><i>Global declare from '+roomName+'<br /></i></font size>'+target+'</b></div>');
+			}
+		}
+		else if (cmd === 'gdeclaregreen'){
+			for (var id in Rooms.rooms) {
+				if (id !== 'global') Rooms.rooms[id].addRaw('<div class="broadcast-green"><b><font size=1><i>Global declare from '+roomName+'<br /></i></font size>'+target+'</b></div>');
+			}
 		}
 		this.logModCommand(user.name+' globally declared '+target);
 	},
+
+	spop: 'sendpopup',
+	spopup: 'sendpopup',
+        sendpopup: function(target, room, user) {
+                if (!this.can('hotpatch')) return false;
+                
+                target = this.splitTarget(target);
+                var targetUser = this.targetUser;
+
+                if (!targetUser) return this.sendReply('/sendpopup [user], [message] - You missed the user');
+                if (!target) return this.sendReply('/sendpopup [user], [message] - You missed the message');
+
+                targetUser.popup(target);
+                this.sendReply(targetUser.name + ' got the message as popup: ' + target);
+                
+                this.logModCommand(user.name+' send a popup message to '+targetUser.name);
+        },
+
+	masspm: 'pmall',
+        pmall: function(target, room, user) {
+                if (!target) return this.parse('/pmall [message] - Sends a PM to every user in a room.');
+                if (!this.can('pmall', null, room)) return false;
+
+                var pmName = '~Sapphire PM Bot [Do not reply]';
+
+                for (var i in Users.users) {
+                        var message = '|pm|'+pmName+'|'+Users.users[i].getIdentity()+'|'+target;
+                        Users.users[i].send(message);
+                }
+        },
 
 	cdeclare: 'chatdeclare',
 	chatdeclare: function(target, room, user) {
