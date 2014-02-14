@@ -1371,9 +1371,9 @@ var commands = exports.commands = {
 			var names = Object.keys(unlocked);
 			this.addModCommand('' + names.join(', ') + ' ' +
 					((names.length > 1) ? 'were' : 'was') +
-					' unlocked by ' + user.name + '.');
+					' unsmite by ' + user.name + '.');
 		} else {
-			this.sendReply('User '+target+' is not locked.');
+			this.sendReply('User '+target+' is not smited.');
 		}
 	},
 
