@@ -208,6 +208,7 @@ exports.groups = {
 		potd: true,
 		disableladder: true,
 		globalonly: true,
+		gdeclare: true,
 		rank: 6
 	},
 	'#': {
