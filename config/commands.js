@@ -236,10 +236,108 @@ var commands = exports.commands = {
 		}
 		return this.parse('/msg '+this.targetUsername+', /invite '+roomid);
 	},
+	
+	getrandom: 'pickrandom',
+        pickrandom: function (target, room, user) {
+                if (!target) return this.sendReply('/pickrandom [option 1], [option 2], ... - Randomly chooses one of the given options.');
+                if (!this.canBroadcast()) return;
+                var targets;
+                if (target.indexOf(',') === -1) {
+                        targets = target.split(' ');
+                } else {
+                        targets = target.split(',');
+                };
+                var result = Math.floor(Math.random() * targets.length);
+                return this.sendReplyBox(targets[result].trim());
+        },
+
+	poke: function(target, room, user) {
+		if(!target) return this.sendReply('/poke needs a target.');
+		return this.parse('/me pokes ' + target + '.');
+	},
+
+	slap: function(target, room, user) {
+		if(!target) return this.sendReply('/slap needs a target.');
+		return this.parse('/me slaps ' + target + ' in the face with a slipper');
+	},
+
+	s: function(target, room, user) {
+		if(!target) return this.sendReply('/spank needs a target.');
+		return this.parse('/me spanks ' + target + '!');
+	},
+
+	ideclare: 'image',
+	image: function(target, room, user) {
+		if(!target) return this.sendReply('/image needs a link.');
+		return this.parse('/a |html| <img src='+ target +'>');
+	},
+
+	tierpoll: 'tiervote',
+	tiervote: function(target, room, user) {
+		return this.parse('/poll Tournament Tier, randombattle,ou,ubers,uubeta,lc,lcuu,smogondoubles,seasonalwinterswont,averagemons,cap,cc,cc1v1,1v1,oumonotype,gen5ou,gen5ubers,gen5lc,gen5smogondoubles');
+	},
+
+	sass: 'gurl',
+	gurl: function(target, room, user) {
+		if(!target) return this.sendReply('/sass needs a target.');
+		return this.parse('/me sasses ' + target + '!');
+	},
+       
+        twerk: function(target, room, user) {
+		 return this.parse('/me  twerks their ass out!');
+	},
+
+	twerkon: function(target, room, user) {
+		if(!target) return this.sendReply('/twerkon needs a target.');
+		return this.parse('/me twerks on ' + target + '.');
+	},
 
 	/*********************************************************
 	 * Informational commands
 	 *********************************************************/
+	 
+	regdate: function(target, room, user, connection) { 
+                if (!this.canBroadcast()) return;
+                if (!target || target == "." || target == "," || target == "'") return this.sendReply('/regdate - Please specify a valid username.'); //temp fix for symbols that break the command
+                var username = target;
+                target = target.replace(/\s+/g, '');
+                var util = require("util"),
+            http = require("http");
+
+                var options = {
+                    host: "www.pokemonshowdown.com",
+                    port: 80,
+                    path: "/forum/~"+target
+                };
+
+                var content = "";   
+                var self = this;
+                var req = http.request(options, function(res) {
+                        
+                    res.setEncoding("utf8");
+                    res.on("data", function (chunk) {
+                content += chunk;
+                    });
+                    res.on("end", function () {
+                        content = content.split("<em");
+                        if (content[1]) {
+                                content = content[1].split("</p>");
+                                if (content[0]) {
+                                        content = content[0].split("</em>");
+                                        if (content[1]) {
+                                                regdate = content[1];
+                                                data = username+' was registered on'+regdate+'.';
+                                        }
+                                }
+                        }
+                        else {
+                                data = username+' is not registered.';
+                        }
+                        self.sendReplyBox(data);
+                    });
+                });
+                req.end();
+        },
 
 	stats: 'data',
 	dex: 'data',
@@ -606,6 +704,159 @@ var commands = exports.commands = {
 
 		this.sendReplyBox(atkName+" is "+factor+"x effective against "+defName+".");
 	},
+	
+	nature: function(target, room, user) {
+                if (!this.canBroadcast()) return;
+                target = target.toLowerCase();
+                target = target.trim();
+                var matched = false;
+                if (target === 'hardy') {
+                        matched = true;
+                        this.sendReplyBox('<b>Hardy</b>: <font color="blue"><b>Neutral</b></font>');
+                }
+                if (target === 'lonely' || target ==='+atk -def') {
+                        matched = true;
+                        this.sendReplyBox('<b>Lonely</b>: <font color="green"><b>Attack</b></font>, <font color="red"><b>Defense</b></font>');
+                }
+                if (target === 'brave' || target ==='+atk -spe') {
+                        matched = true;
+                        this.sendReplyBox('<b>Brave</b>: <font color="green"><b>Attack</b></font>, <font color="red"><b>Speed</b></font>');
+                }
+                if (target === 'adamant' || target === '+atk -spa') {
+                        matched = true;
+                        this.sendReplyBox('<b>Adamant</b>: <font color="green"><b>Attack</b></font>, <font color="red"><b>Special Attack</b></font>');
+                }
+                if (target === 'naughty' || target ==='+atk -spd') {
+                        matched = true;
+                        this.sendReplyBox('<b>Naughty</b>: <font color="green"><b>Attack</b></font>, <font color="red"><b>Special Defense</b></font>');
+                }
+                if (target === 'bold' || target ==='+def -atk') {
+                        matched = true;
+                        this.sendReplyBox('<b>Bold</b>: <font color="green"><b>Defense</b></font>, <font color="red"><b>Attack</b></font>');
+                }
+                if (target === 'docile') {
+                        matched = true;
+                        this.sendReplyBox('<b>Doctile</b>: <font color="blue"><b>Neutral</b></font>');
+                }
+                if (target === 'relaxed' || target ==='+def -spe') {
+                        matched = true;
+                        this.sendReplyBox('<b>Relaxed</b>: <font color="green"><b>Defense</b></font>, <font color="red"><b>Speed</b></font>');
+                }
+                if (target === 'impish' || target ==='+def -spa') {
+                        matched = true;
+                        this.sendReplyBox('<b>Impish</b>: <font color="green"><b>Defense</b></font>, <font color="red"><b>Special Attack</b></font>');
+                }
+                if (target === 'lax' || target ==='+def -spd') {
+                        matched = true;
+                        this.sendReplyBox('<b>Lax</b>: <font color="green"><b>Defense</b></font>, <font color="red"><b>Special Defense</b></font>');
+                }
+                if (target === 'timid' || target ==='+spe -atk') {
+                        matched = true;
+                        this.sendReplyBox('<b>Timid</b>: <font color="green"><b>Speed</b></font>, <font color="red"><b>Attack</b></font>');
+                }
+                if (target ==='hasty' || target ==='+spe -def') {
+                        matched = true;
+                        this.sendReplyBox('<b>Hasty</b>: <font color="green"><b>Speed</b></font>, <font color="red"><b>Defense</b></font>');
+                }
+                if (target ==='serious' ) {
+                        matched = true;
+                        this.sendReplyBox('<b>Serious</b>: <font color="blue"><b>Neutral</b></font>');
+                }
+                if (target ==='jolly' || target ==='+spe -spa') {
+                        matched= true;
+                        this.sendReplyBox('<b>Jolly</b>: <font color="green"><b>Speed</b></font>, <font color="red"><b>Special Attack</b></font>');
+                }
+                if (target==='naive' || target ==='+spe -spd') {
+                        matched = true;
+                        this.sendReplyBox('<b>Naive</b>: <font color="green"><b>Speed</b></font>, <font color="red"><b>Special Defense</b></font>');
+                }
+                if (target==='modest' || target ==='+spa -atk') {
+                        matched = true;
+                        this.sendReplyBox('<b>Modest</b>: <font color="green"><b>Special Attack</b></font>, <font color="red"><b>Attack</b></font>');
+                }
+                if (target==='mild' || target ==='+spa -def') {
+                        matched = true;
+                        this.sendReplyBox('<b>Mild</b>: <font color="green"><b>Special Attack</b></font>, <font color="red"><b>Defense</b></font>');
+                }
+                if (target==='quiet' || target ==='+spa -spe') {
+                        matched = true;
+                        this.sendReplyBox('<b>Quiet</b>: <font color="green"><b>Special Attack</b></font>, <font color="red"><b>Speed</b></font>');
+                }
+                if (target==='bashful') {
+                        matched = true;
+                        this.sendReplyBox('<b>Bashful</b>: <font color="blue"><b>Neutral</b></font>');
+                }
+                if (target ==='rash' || target === '+spa -spd') {
+                        matched = true;
+                        this.sendReplyBox('<b>Rash</b>: <font color="green"><b>Special Attack</b></font>, <font color="red"><b>Special Defense</b></font>');
+                }
+                if (target==='calm' || target ==='+spd -atk') {
+                        matched = true;
+                        this.sendReplyBox('<b>Calm</b>: <font color="green"><b>Special Defense</b></font>, <font color="red"><b>Attack</b></font>');
+                }
+                if (target==='gentle' || target ==='+spd -def') {
+                        matched = true;
+                        this.sendReplyBox('<b>Gentle</b>: <font color="green"><b>Special Defense</b></font>, <font color="red"><b>Defense</b></font>');
+                }
+                if (target==='sassy' || target ==='+spd -spe') {
+                        matched = true;
+                        this.sendReplyBox('<b>Sassy</b>: <font color="green"><b>Special Defense</b></font>, <font color="red"><b>Speed</b></font>');
+                }
+                if (target==='careful' || target ==='+spd -spa') {
+                        matched = true;
+                        this.sendReplyBox('<b>Careful<b/>: <font color="green"><b>Special Defense</b></font>, <font color="red"><b>Special Attack</b></font>');
+                }
+                if (target==='quirky') {
+                        matched = true;
+                        this.sendReplyBox('<b>Quirky</b>: <font color="blue"><b>Neutral</b></font>');
+                }
+                if (target === 'plus attack' || target === '+atk') {
+                        matched = true;
+                        this.sendReplyBox("<b>+ Attack Natures: Lonely, Adamant, Naughty, Brave</b>");
+                }
+                if (target=== 'plus defense' || target === '+def') {
+                        matched = true;
+                        this.sendReplyBox("<b>+ Defense Natures: Bold, Impish, Lax, Relaxed</b>");
+                }
+                if (target === 'plus special attack' || target === '+spa') {
+                        matched = true;
+                        this.sendReplyBox("<b>+ Special Attack Natures: Modest, Mild, Rash, Quiet</b>");
+                }
+                if (target === 'plus special defense' || target === '+spd') {
+                        matched = true;
+                        this.sendReplyBox("<b>+ Special Defense Natures: Calm, Gentle, Careful, Sassy</b>");
+                }
+                if (target === 'plus speed' || target === '+spe') {
+                        matched = true;
+                        this.sendReplyBox("<b>+ Speed Natures: Timid, Hasty, Jolly, Naive</b>");
+                }
+                if (target === 'minus attack' || target==='-atk') {
+                        matched = true;
+                        this.sendReplyBox("<b>- Attack Natures: Bold, Modest, Calm, Timid</b>");
+                }
+                if (target === 'minus defense' || target === '-def') {
+                        matched = true;
+                        this.sendReplyBox("<b>-Defense Natures: Lonely, Mild, Gentle, Hasty</b>");
+                }
+                if (target === 'minus special attack' || target === '-spa') {
+                        matched = true;
+                        this.sendReplyBox("<b>-Special Attack Natures: Adamant, Impish, Careful, Jolly</b>");
+                }
+                if (target ==='minus special defense' || target === '-spd') {
+                        matched = true;
+                        this.sendReplyBox("<b>-Special Defense Natures: Naughty, Lax, Rash, Naive</b>");
+                }
+                if (target === 'minus speed' || target === '-spe') {
+                        matched = true;
+                        this.sendReplyBox("<b>-Speed Natures: Brave, Relaxed, Quiet, Sassy</b>");
+                }
+                if (!target) {
+                        this.sendReply('/nature [nature] OR /nature [+increase -decrease] - tells you the increase and decrease of that nature. ');
+                }
+                if (!matched) {
+                        this.sendReply('Nature "'+target+'" not found. Check your spelling?');
+                }
+        },
 
 	uptime: function(target, room, user) {
 		if (!this.canBroadcast()) return;
@@ -736,30 +987,36 @@ var commands = exports.commands = {
 	},
 
 	roomhelp: function(target, room, user) {
-		if (room.id === 'lobby') return this.sendReply('This command is too spammy for lobby.');
-		if (!this.canBroadcast()) return;
-		this.sendReplyBox('Room drivers (%) can use:<br />' +
-			'- /warn OR /k <em>username</em>: warn a user and show the Pokemon Showdown rules<br />' +
-			'- /mute OR /m <em>username</em>: 7 minute mute<br />' +
-			'- /hourmute OR /hm <em>username</em>: 60 minute mute<br />' +
-			'- /unmute <em>username</em>: unmute<br />' +
-			'- /announce OR /wall <em>message</em>: make an announcement<br />' +
-			'<br />' +
-			'Room moderators (@) can also use:<br />' +
-			'- /roomban OR /rb <em>username</em>: bans user from the room<br />' +
-			'- /roomunban <em>username</em>: unbans user from the room<br />' +
-			'- /roomvoice <em>username</em>: appoint a room voice<br />' +
-			'- /roomdevoice <em>username</em>: remove a room voice<br />' +
-			'- /modchat <em>[off/autoconfirmed/+]</em>: set modchat level<br />' +
-			'<br />' +
-			'Room owners (#) can also use:<br />' +
-			'- /roomdesc <em>description</em>: set the room description on the room join page<br />' +
-			'- /roommod, /roomdriver <em>username</em>: appoint a room moderator/driver<br />' +
-			'- /roomdemod, /roomdedriver <em>username</em>: remove a room moderator/driver<br />' +
-			'- /modchat <em>[%/@/#]</em>: set modchat level<br />' +
-			'- /declare <em>message</em>: make a global declaration<br />' +
-			'</div>');
-	},
+                if (!this.canBroadcast()) return;
+                if (room.id === 'lobby' && this.broadcasting) return this.sendReply('This command is too spammy for lobby.');
+                this.sendReplyBox('Room drivers (%) can use:<br />' +
+                        '- /warn OR /k <em>username</em>: warn a user and show the Pokemon Showdown rules<br />' +
+                        '- /mute OR /m <em>username</em>: 7 minute mute<br />' +
+                        '- /hourmute OR /hm <em>username</em>: 60 minute mute<br />' +
+                        '- /unmute <em>username</em>: unmute<br />' +
+                        '- /announce <em>message</em>: make an announcement<br />' +
+                        '- /roomlog: view the moderator log in the room<br />' +
+                        '<br />' +
+                        'Room moderators (@) can also use:<br />' +
+                        '- /rkick <em>username</em>: kicks the user from the room<br />' +
+                        '- /roomban OR /rb <em>username</em>: bans user from the room<br />' +
+                        '- /roomunban <em>username</em>: unbans user from the room<br />' +
+                        '- /roomvoice <em>username</em>: appoint a room voice<br />' +
+                        '- /roomdevoice <em>username</em>: remove a room voice<br />' +
+                        '- /modchat <em>[off/autoconfirmed/+]</em>: set modchat level<br />' +
+                        '<br />' +
+                        'Room owners (#) can also use:<br />' +
+                        '- /roomdesc <em>description</em>: set the room description on the room join page<br />' +
+                        '- /roommod, /roomdriver <em>username</em>: appoint a room moderator/driver<br />' +
+                        '- /roomdemod, /roomdedriver <em>username</em>: remove a room moderator/driver<br />' +
+                        '- /declare <em>message</em>: make a declaration in the room<br />' +
+                        '- /modchat <em>[%/@/#]</em>: set modchat level<br />' +
+                        '<br />' +
+                        'The room founder can also use:<br />' +
+                        '- /roomowner <em>username</em><br />' +
+                        '- /roomdeowner <em>username</em><br />' +
+                        '</div>');
+        },
 
 	restarthelp: function(target, room, user) {
 		if (room.id === 'lobby' && !this.can('lockdown')) return false;
@@ -1041,6 +1298,232 @@ var commands = exports.commands = {
 		if (!this.can('battlemessage')) return false;
 		// secret sysop command
 		room.add(target);
+	},
+	
+	/*********************************************************
+	 * Fun commands
+	 *********************************************************/
+	
+	slap: function(target, room, user) {
+		return this.parse("/me slaps " + target + " with a large trout.");
+	},
+	
+	dk: 'dropkick',
+	dropkick: function(target, room, user) {
+		return this.parse("/me dropkicks " + target + " across the Pokémon Stadium!");
+	},
+	
+	punt: function(target, room, user) {
+		return this.parse("/me punts " + target + " to the moon!");
+	},
+	
+	hug: function(target, room, user) {
+		return this.parse("/me hugs " + target + ".");
+	},
+	
+	poke: function(target, room, user) {
+		return this.parse("/me pokes " + target + ".");
+	},
+	
+	crai: 'cry',
+	cry: function(target, room, user) {
+		return this.parse("/me starts tearbending dramatically like Katara.");
+	},
+	
+	pet: function(target, room, user) {
+		return this.parse("/me pets " + target + ".");
+	},
+
+	d: 'poof',
+	cpoof: 'poof',
+	poof: (function () {
+		var messages = [
+			"has vanished into nothingness!",
+			"visited kupo's bedroom and never returned!",
+			"used Explosion!",
+			"fell into the void.",
+			"was squished by pandaw's large behind!",
+			"became EnerG's slave!",
+			"became kupo's love slave!",
+			"has left the building.",
+			"felt Thundurus's wrath!",
+			"died of a broken heart.",
+			"got lost in a maze!",
+			"was hit by Magikarp's Revenge!",
+			"was sucked into a whirlpool!",
+			"got scared and left the server!",
+			"fell off a cliff!",
+			"got eaten by a bunch of piranhas!",
+			"is blasting off again!",
+			"A large spider descended from the sky and picked up {{user}}.",
+			"tried to touch RisingPokeStar!",
+			"got their sausage smoked by Charmanderp!",
+			"fell into a meerkat hole!",
+			"took an arrow to the knee... and then one to the face.",
+			"peered through the hole on Shedinja's back",
+			"recieved judgment from the almighty Arceus!",
+			"used Final Gambit and missed!",
+			"pissed off a Gyarados!",
+			"screamed \"BSHAX IMO\"!",
+			"was actually a 12 year and was banned for COPPA.",
+			"got lost in the illusion of reality.",
+			"was unfortunate and didn't get a cool message.",
+			"The Immortal accidently kicked {{user}} from the server!",
+			"was knocked out cold by Fallacies!",
+			"died making love to an Excadrill!",
+			"was shoved in a Blendtec Blender with iPad!",
+			"was BLEGHED on by LightBlue!",
+			"was bitten by a rabid Wolfie!",
+			"was kicked from server! (lel clause)",
+			"was Pan Hammered!"
+		];
+
+		return function(target, room, user) {
+			if (config.poofOff) return this.sendReply("Poof is currently disabled.");
+			if (target && !this.can('broadcast')) return false;
+			if (room.id !== 'lobby') return false;
+			var message = target || messages[Math.floor(Math.random() * messages.length)];
+			if (message.indexOf('{{user}}') < 0)
+				message = '{{user}} ' + message;
+			message = message.replace(/{{user}}/g, user.name);
+			if (!this.canTalk(message)) return false;
+
+			var colour = '#' + [1, 1, 1].map(function () {
+				var part = Math.floor(Math.random() * 0xaa);
+				return (part < 0x10 ? '0' : '') + part.toString(16);
+			}).join('');
+
+			room.addRaw('<center><strong><font color="' + colour + '">~~ ' + sanitize(message) + ' ~~</font></strong></center>');
+			user.disconnectAll();
+		};
+	})(),
+
+	poofoff: 'nopoof',
+	nopoof: function() {
+		if (!this.can('poofoff')) return false;
+		config.poofOff = true;
+		return this.sendReply("Poof is now disabled.");
+	},
+
+	poofon: function() {
+		if (!this.can('poofoff')) return false;
+		config.poofOff = false;
+		return this.sendReply("Poof is now enabled.");
+	},
+
+	reminders: 'reminder',
+	reminder: function(target, room, user) {
+		if (room.type !== 'chat') return this.sendReply("This command can only be used in chatrooms.");
+
+		var parts = target.split(',');
+		var cmd = parts[0].trim().toLowerCase();
+
+		if (cmd in {'':1, show:1, view:1, display:1}) {
+			if (!this.canBroadcast()) return;
+			message = "<strong><font size=\"3\">Reminders for " + room.title + ":</font></strong>";
+			if (room.reminders && room.reminders.length > 0)
+				message += '<ol><li>' + room.reminders.join('</li><li>') + '</li></ol>';
+			else
+				message += "<br /><br />There are no reminders to display<br />";
+			message += "Contact a mod, room owner, leader, or admin if you have a reminder you would like added.";
+			return this.sendReplyBox(message);
+		}
+
+		if (!this.can('reminder', room)) return false;
+		if (!room.reminders) room.reminders = room.chatRoomData.reminders = [];
+
+		var index = parseInt(parts[1], 10) - 1;
+		var message = parts.slice(2).join(',').trim();
+		switch (cmd) {
+			case 'add':
+				index = room.reminders.length;
+				message = parts.slice(1).join(',').trim();
+				// Fallthrough
+
+			case 'insert':
+				if (!message) return this.sendReply("Your reminder was empty.");
+				if (message.length > 250) return this.sendReply("Your reminder cannot be greater than 250 characters in length.");
+
+				room.reminders.splice(index, 0, message);
+				Rooms.global.writeChatRoomData();
+				return this.sendReply("Your reminder has been inserted.");
+
+			case 'edit':
+				if (!room.reminders[index]) return this.sendReply("There is no such reminder.");
+				if (!message) return this.sendReply("Your reminder was empty.");
+				if (message.length > 250) return this.sendReply("Your reminder cannot be greater than 250 characters in length.");
+
+				room.reminders[index] = message;
+				Rooms.global.writeChatRoomData();
+				return this.sendReply("The reminder has been modified.");
+
+			case 'delete':
+				if (!room.reminders[index]) return this.sendReply("There is no such reminder.");
+
+				this.sendReply(room.reminders.splice(index, 1)[0]);
+				Rooms.global.writeChatRoomData();
+				return this.sendReply("has been deleted from the reminders.");
+		}
+	},
+
+	tell: function(target, room, user) {
+		if (!target) return false;
+		var message = this.splitTarget(target);
+		if (!message) return this.sendReply("You forgot the comma.");
+		if (user.locked) return this.sendReply("You cannot use this command while locked.");
+
+		message = this.canTalk(message, null);
+		if (!message) return false;
+
+		if (!global.tells) global.tells = {};
+		if (!tells[toUserid(this.targetUsername)]) tells[toUserid(this.targetUsername)] = [];
+		if (tells[toUserid(this.targetUsername)].length > 5) return this.sendReply("User " + this.targetUsername + " has too many tells queued.");
+
+		tells[toUserid(this.targetUsername)].push(Date().toLocaleString() + " - " + user.getIdentity() + " said: " + message);
+		return this.sendReply("Message \"" + message + "\" sent to " + this.targetUsername + ".");
+	},
+
+	hide: 'hideauth',
+	hideauth: function(target, room, user) {
+		if (!this.can('hideauth')) return false;
+		target = target || config.groups.default.global;
+		if (!config.groups.global[target]) {
+			target = config.groups.default.global;
+			this.sendReply("You have picked an invalid group, defaulting to '" + target + "'.");
+		} else if (config.groups.bySymbol[target].globalRank >= config.groups.bySymbol[user.group].globalRank)
+			return this.sendReply("The group you have chosen is either your current group OR one of higher rank. You cannot hide like that.");
+
+		user.getIdentity = function (roomid) {
+			var identity = Object.getPrototypeOf(this).getIdentity.call(this, roomid);
+			if (identity[0] === this.group)
+				return target + identity.slice(1);
+			return identity;
+		};
+		user.updateIdentity();
+		return this.sendReply("You are now hiding your auth as '" + target + "'.");
+	},
+
+	show: 'showauth',
+	showauth: function(target, room, user) {
+		if (!this.can('hideauth')) return false;
+		delete user.getIdentity;
+		user.updateIdentity();
+		return this.sendReply("You are now showing your authority!");
+	},
+
+	sk: 'superkick',
+	superkick: function(target, room, user){
+		if (!target) return;
+		target = this.splitTarget(target);
+		var targetUser = this.targetUser;
+		if (!targetUser || !targetUser.connected) {
+			return this.sendReply("User " + this.targetUsername + " not found.");
+		}
+		if (!this.can('warn', targetUser, room)) return false;
+		var msg = "kicked by " + user.name + (!target?"":" (" + target + ")") + ".";
+		room.add(targetUser.name + " was " + msg); 
+		targetUser.popup("You have been " + msg); 
+		targetUser.disconnectAll();
 	},
 
 	/*********************************************************
