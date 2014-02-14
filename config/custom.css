@@ -12,7 +12,13 @@
 
 body{background-image:url("http://fc05.deviantart.net/fs71/f/2013/075/2/c/ice_type_wallpaper_by_reshiramaster-d5y88hw.jpg");background-repeat:no-repeat;background-position:center}
 
-.chat-log{font-size:10pt;background: url("http://cdn.bulbagarden.net/upload/3/3b/501Oshawott.png") no-repeat scroll right bottom;background:#f2f9ff;color:#000;overflow:auto;}
+.chat-log{
+	font-size:10pt;
+	background:#CHAT LOG;
+	color:#TEXT COLOR;
+	overflow:auto
+}
+/* color must be in codes like 000000 */
 
 .userlist{
 border-left: 1px solid #D5DDE4;
