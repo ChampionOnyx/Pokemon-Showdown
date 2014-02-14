@@ -14,8 +14,8 @@ body{background-image:url("http://fc05.deviantart.net/fs71/f/2013/075/2/c/ice_ty
 
 .chat-log{
 	font-size:10pt;
-	background:#CHAT LOG;
-	color:#TEXT COLOR;
+	background:#FFFFFF;
+	color:#000000;
 	overflow:auto
 }
 /* color must be in codes like 000000 */
